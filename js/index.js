@@ -1,8 +1,23 @@
 import * as THREE from "three";
 
-const vshader = ``;
+const vshader = `
+  varying vec3 v_position;
 
-const fshader = ``;
+  void main() {
+    v_position = position;
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(v_position, 1.0);
+  }
+`;
+
+const fshader = `
+  varying vec3 v_position;
+
+  void main() {
+    float circle = 1.0 - step(0.5, length(v_position.xy));
+    gl_FragColor = vec4(0.0, 0.0, 1.0, 1.0) * circle;
+  }
+
+`;
 
 const scene = new THREE.Scene();
 const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.1, 10);
@@ -21,6 +36,8 @@ const material = new THREE.ShaderMaterial({
 
 const plane = new THREE.Mesh(geometry, material);
 scene.add(plane);
+
+camera.position.z = 1;
 
 function animate() {
   requestAnimationFrame(animate);
